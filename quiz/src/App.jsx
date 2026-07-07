@@ -1,13 +1,20 @@
 import './App.css'
 import Welcome from './components/Welcome'
 import Question from './components/Question'
+import GameOver from './components/GameOver'
 
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { QuizContext } from './context/quiz'
+
 
 
 function App() {
   const [quizState, dispatch] = useContext(QuizContext)
+
+  useEffect(() => {
+    // Embaralhar as perguntas
+    dispatch({type: "REORDER_QUESTIONS  "})
+  }, [])
 
   return (
     <>
@@ -15,6 +22,7 @@ function App() {
       <h1>Dev Quiz</h1>
       {quizState.gameStage === "Start" && <Welcome/>}
       {quizState.gameStage === "Playing" && <Question/>}
+      {quizState.gameStage === "End" && <GameOver/>}
     </div>
     </>
   )
