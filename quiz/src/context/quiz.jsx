@@ -1,7 +1,7 @@
 import { useReducer, createContext } from "react";
-import questions from "../data/questions"
+import questions from "../data/questions_complete"
 
-const STAGES = ["Start", "Playing", "End"]
+const STAGES = ["Start", "Category", "Playing", "End"]
 
 const initialState = {
     gameStage: STAGES[0],
@@ -20,8 +20,23 @@ const quizReducer = (state, action) => {
                 gameStage: STAGES[1],
             }
 
-            case "REORDER_QUESTIONS":
-                const reorderedQuestions = questions.sort(() => {
+        case "START_GAME":
+                let quizQuestions = null
+
+                state.questions.forEach((question) => {
+                    if(question.category === action.payload) {
+                        quizQuestions = question.questions
+                    }
+                })
+
+                return {
+                    ...state,
+                    questions: quizQuestions,
+                    gameStage: STAGES[2]
+                }
+
+        case "REORDER_QUESTIONS":
+                const reorderedQuestions = state.questions.sort(() => {
                     return Math.random() - 0.5
                 })
 
@@ -30,7 +45,7 @@ const quizReducer = (state, action) => {
                     questions: reorderedQuestions
                 }
 
-            case "CHANGE_QUESTION":
+        case "CHANGE_QUESTION":
                 const nexQuestion = state.currentQuestion + 1
                 let endGame = false
 
@@ -41,14 +56,14 @@ const quizReducer = (state, action) => {
                 return {
                     ...state,
                     currentQuestion: nexQuestion,
-                    gameStage: endGame ? STAGES[2] : state.gameStage,
+                    gameStage: endGame ? STAGES[3] : state.gameStage,
                     answerSelected: false,
                 }
 
-            case "NEW_GAME":
+        case "NEW_GAME":
                 return initialState
 
-            case "CHECK_ANSWER":
+        case "CHECK_ANSWER":
                 if(state.answerSelected) return state
 
 
